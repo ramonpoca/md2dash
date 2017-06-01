@@ -122,15 +122,29 @@ class DashRenderer(Renderer):
 
 
 toc=DashRenderer()
-
 markdown = mistune.Markdown(renderer = toc)
 toc.reset_toc()
 text = markdown.parse(args.inputfile.read())
 toc.render_toc(cur)
 conn.commit()
 
+scaffold = '''
+<HTML>
+<HEAD>
+<TITLE>%s</TITLE>
+<STYLE>
+%s
+</STYLE>
+</HEAD>
+<BODY>%s</BODY>
+</HTML>    
+''' % (DOCSETNAME, html.HtmlFormatter().get_style_defs('.highlight'), text)
+
+
+
+
 with open(docpath + "/index.html",'w') as f:
-    f.write(text)
+    f.write(scaffold)
 
     
 
