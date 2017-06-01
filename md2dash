@@ -19,6 +19,7 @@ DEFAULT_HEADER_TYPES=['VOID','Section','Section','VOID','VOID','VOID','VOID']
 parser = argparse.ArgumentParser(description='Convert markdown to a dash cheat sheet.')
 parser.add_argument('inputfile', type=argparse.FileType(), help='Markdown input file')
 parser.add_argument('-l', '--level-type', nargs=2, action='append', metavar=('HEADER_LEVEL', 'HEADER_TYPE'), help="Set a Dash header type for the given markdown level (1-6)\nBy default only levels 1 and 2 are set as Category.\nAvailable types are:\n%s" % (', '.join(HEADER_TYPES)) )
+parser.add_argument('-t', '--title', metavar=('TITLE'), help="Set a title for the docset. If not set, the markdown file name will be used.")
 args = parser.parse_args()
 
 
@@ -37,7 +38,11 @@ if args.level_type and len(args.level_type) > 0:
 
 
 FILE=args.inputfile.name
-DOCSETNAME=FILE.split('.')[0]
+if args.title:
+    DOCSETNAME=args.title
+else:
+    DOCSETNAME=FILE.split('.')[0]
+
 print "Parsing %s into %s.docset" % (FILE, DOCSETNAME)
 
 print "Creating paths..."
