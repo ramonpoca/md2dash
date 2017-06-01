@@ -11,9 +11,30 @@ from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import html
 
+HEADER_TYPES=['Annotation', 'Attribute', 'Binding', 'Builtin', 'Callback', 'Category', 'Class', 'Command', 'Component', 'Constant', 'Constructor', 'Define', 'Delegate', 'Diagram', 'Directive', 'Element', 'Entry', 'Enum', 'Environment', 'Error', 'Event', 'Exception', 'Extension', 'Field', 'File', 'Filter', 'Framework', 'Function', 'Global', 'Guide', 'Hook', 'Instance', 'Instruction', 'Interface', 'Keyword', 'Library', 'Literal', 'Macro', 'Method', 'Mixin', 'Modifier', 'Module', 'Namespace', 'Notation', 'Object', 'Operator', 'Option', 'Package', 'Parameter', 'Plugin', 'Procedure', 'Property', 'Protocol', 'Provider', 'Provisioner', 'Query', 'Record', 'Resource', 'Sample', 'Section', 'Service', 'Setting', 'Shortcut', 'Statement', 'Struct', 'Style', 'Subroutine', 'Tag', 'Test', 'Trait', 'Type', 'Union', 'Value', 'Variable', 'Word']
+
+DEFAULT_HEADER_TYPES=['VOID','Section','Section','VOID','VOID','VOID','VOID']
+
+
 parser = argparse.ArgumentParser(description='Convert markdown to a dash cheat sheet.')
 parser.add_argument('inputfile', type=argparse.FileType(), help='Markdown input file')
+parser.add_argument('-l', '--level-type', nargs=2, action='append', metavar=('HEADER_LEVEL', 'HEADER_TYPE'), help="Set a Dash header type for the given markdown level (1-6)\nBy default only levels 1 and 2 are set as Category.\nAvailable types are:\n%s" % (', '.join(HEADER_TYPES)) )
 args = parser.parse_args()
+
+
+if args.level_type and len(args.level_type) > 0:
+    for level, name in args.level_type:
+        l = 0
+        try:
+            l = int(level)
+            if l < 1 or l > 6:
+                parser.error("Error: %d should be between 1 and 6" % l)
+        except ValueError:        
+            parser.error("Error: %s should be an integer between 1 and 6" % level)
+        if not name in HEADER_TYPES:
+            parser.error("Error: %s should be one of %s" % (name, ', '.join(HEADER_TYPES)))
+        DEFAULT_HEADER_TYPES[l] = name
+
 
 FILE=args.inputfile.name
 DOCSETNAME=FILE.split('.')[0]
@@ -84,7 +105,7 @@ class DashRenderer(Renderer):
         self.toc_count += 1
         return rv
 
-    def render_toc(self, cursor, level=2):
+    def render_toc(self, cursor):
         """Render TOC to SQLITE index.
 
         :param cursor: sqlite cursor for the inserts
@@ -94,12 +115,9 @@ class DashRenderer(Renderer):
         for toc in self.toc_tree:
             index, text, l, raw = toc
             path = "index.html#toc-%d" % index
-            if l == 1:
-                cursor.execute('INSERT INTO searchIndex(name, type, path) VALUES (?,?,?)', (text, 'Category', path))
-            elif l == 2:
-                cursor.execute('INSERT INTO searchIndex(name, type, path) VALUES (?,?,?)', (text, 'Category', path))
-            elif l == 3:
-                cursor.execute('INSERT INTO searchIndex(name, type, path) VALUES (?,?,?)', (text, 'Category', path))
+            htype = DEFAULT_HEADER_TYPES[l]
+            if htype != 'VOID':
+                cursor.execute('INSERT INTO searchIndex(name, type, path) VALUES (?,?,?)', (text, htype, path))
 
 
 

@@ -1,10 +1,10 @@
 # md2dash
 
-A python script to convert a Markdown file into a Dash Cheatsheet
+A python script to convert a Markdown file into a Dash Cheatsheet.
 
 ## Dependencies
 
-This script uses mistune to parse markdown
+This script uses mistune to parse markdown:
 
 ```bash
 pip install mistune
@@ -27,6 +27,16 @@ Note that the docset name will be based on the name of the Markdown file.
 open README.docset
 ```
 
+You can get a usage with `-h`.
+
+### Customizing headers
+
+By default only headers 1 and 2 are added to the index. You can add additional or different types for different headers:
+
+```bash
+./md2dash -l 3 Section -l 4 Header README.md
+```
+
 ## License
 
-Licensed under the GNU General Public License v3.0
+Licensed under the GNU General Public License v3.0.
