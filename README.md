@@ -27,7 +27,16 @@ Note that the docset name will be based on the name of the Markdown file.
 open README.docset
 ```
 
-You can get a usage with `-h`.
+You can get the full usage with `-h`.
+
+
+### Docset title
+
+If not set with `-t/--title` the title will use the markdown file basename.
+
+```bash
+./md2dash -t "Crazy Potato" README.md
+```
 
 ### Customizing headers
 
