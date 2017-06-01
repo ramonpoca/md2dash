@@ -3,7 +3,7 @@ OUTPUT=README.docset
 
 test:
 	rm -rf ${OUTPUT}
-	./md2dash.py ${INPUT}
+	./md2dash ${INPUT}
 
 install:
 	pip install mistune

@@ -2,7 +2,9 @@
 
 A python script to convert a Markdown file into a Dash Cheatsheet
 
-## Setup
+## Dependencies
+
+This script uses mistune to parse markdown
 
 ```bash
 pip install mistune
@@ -14,10 +16,12 @@ pip install mistune
 Just invoke it with the markdown file:
 
 ```bash
-./md2dash.py README.md
+./md2dash README.md
 ```
 
-then you can add the docset to dash by double clicking or using `open`
+then you can add the docset to dash by double clicking or using `open`.
+Note that the docset name will be based on the name of the Markdown file.
+
 
 ```bash
 open README.docset
