@@ -3,6 +3,7 @@
 
 """Convert markdonw to Dash cheat sheet"""
 
+import codecs
 import os, re, sqlite3
 import argparse
 import mistune
@@ -11,7 +12,7 @@ from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import html
 
-HEADER_TYPES=['Annotation', 'Attribute', 'Binding', 'Builtin', 'Callback', 'Category', 'Class', 'Command', 'Component', 'Constant', 'Constructor', 'Define', 'Delegate', 'Diagram', 'Directive', 'Element', 'Entry', 'Enum', 'Environment', 'Error', 'Event', 'Exception', 'Extension', 'Field', 'File', 'Filter', 'Framework', 'Function', 'Global', 'Guide', 'Hook', 'Instance', 'Instruction', 'Interface', 'Keyword', 'Library', 'Literal', 'Macro', 'Method', 'Mixin', 'Modifier', 'Module', 'Namespace', 'Notation', 'Object', 'Operator', 'Option', 'Package', 'Parameter', 'Plugin', 'Procedure', 'Property', 'Protocol', 'Provider', 'Provisioner', 'Query', 'Record', 'Resource', 'Sample', 'Section', 'Service', 'Setting', 'Shortcut', 'Statement', 'Struct', 'Style', 'Subroutine', 'Tag', 'Test', 'Trait', 'Type', 'Union', 'Value', 'Variable', 'Word']
+HEADER_TYPES=['VOID','Annotation', 'Attribute', 'Binding', 'Builtin', 'Callback', 'Category', 'Class', 'Command', 'Component', 'Constant', 'Constructor', 'Define', 'Delegate', 'Diagram', 'Directive', 'Element', 'Entry', 'Enum', 'Environment', 'Error', 'Event', 'Exception', 'Extension', 'Field', 'File', 'Filter', 'Framework', 'Function', 'Global', 'Guide', 'Hook', 'Instance', 'Instruction', 'Interface', 'Keyword', 'Library', 'Literal', 'Macro', 'Method', 'Mixin', 'Modifier', 'Module', 'Namespace', 'Notation', 'Object', 'Operator', 'Option', 'Package', 'Parameter', 'Plugin', 'Procedure', 'Property', 'Protocol', 'Provider', 'Provisioner', 'Query', 'Record', 'Resource', 'Sample', 'Section', 'Service', 'Setting', 'Shortcut', 'Statement', 'Struct', 'Style', 'Subroutine', 'Tag', 'Test', 'Trait', 'Type', 'Union', 'Value', 'Variable', 'Word']
 
 DEFAULT_HEADER_TYPES=['VOID','Section','Section','VOID','VOID','VOID','VOID']
 
@@ -129,7 +130,7 @@ class DashRenderer(Renderer):
 toc=DashRenderer()
 markdown = mistune.Markdown(renderer = toc)
 toc.reset_toc()
-text = markdown.parse(args.inputfile.read())
+text = markdown.parse(args.inputfile.read().decode('utf-8'))
 toc.render_toc(cur)
 conn.commit()
 
@@ -148,7 +149,7 @@ scaffold = '''
 
 
 
-with open(docpath + "/index.html",'w') as f:
+with codecs.open(docpath + "/index.html",'w', 'utf-8') as f:
     f.write(scaffold)
 
     
