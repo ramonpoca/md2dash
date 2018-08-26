@@ -44,12 +44,12 @@ if args.title:
 else:
     DOCSETNAME=FILE.split('.')[0]
 
-print "Parsing %s into %s.docset" % (FILE, DOCSETNAME)
+print( "Parsing %s into %s.docset" % (FILE, DOCSETNAME))
 
-print "Creating paths..."
+print( "Creating paths...")
 os.makedirs("%s.docset/Contents/Resources/Documents" % DOCSETNAME)
 
-print "Creating plist..."
+print( "Creating plist...")
 PLIST='''
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -78,7 +78,7 @@ PLIST='''
 with open("%s.docset/Contents/Info.plist" % DOCSETNAME, 'w') as f:
     f.write(PLIST)
 
-print "Creating docSet.dsidx database..."
+print( "Creating docSet.dsidx database...")
 
 conn = sqlite3.connect('%s.docset/Contents/Resources/docSet.dsidx' % DOCSETNAME)
 cur = conn.cursor()
@@ -130,7 +130,7 @@ class DashRenderer(Renderer):
 toc=DashRenderer()
 markdown = mistune.Markdown(renderer = toc)
 toc.reset_toc()
-text = markdown.parse(args.inputfile.read().decode('utf-8'))
+text = markdown.parse(args.inputfile.read())
 toc.render_toc(cur)
 conn.commit()
 
