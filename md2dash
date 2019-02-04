@@ -1,10 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 """Convert markdonw to Dash cheat sheet"""
 
 import codecs
-import os, re, sqlite3
+import os, re, sqlite3, sys, shutil
 import argparse
 import mistune
 from mistune import Renderer
@@ -31,7 +31,7 @@ if args.level_type and len(args.level_type) > 0:
             l = int(level)
             if l < 1 or l > 6:
                 parser.error("Error: %d should be between 1 and 6" % l)
-        except ValueError:        
+        except ValueError:
             parser.error("Error: %s should be an integer between 1 and 6" % level)
         if not name in HEADER_TYPES:
             parser.error("Error: %s should be one of %s" % (name, ', '.join(HEADER_TYPES)))
@@ -99,7 +99,9 @@ class DashRenderer(Renderer):
         lexer = get_lexer_by_name(lang, stripall=True)
         formatter = html.HtmlFormatter()
         return highlight(code, lexer, formatter)
+
     def reset_toc(self):
+        self.images = []
         self.toc_tree = []
         self.toc_count = 0
 
@@ -110,6 +112,10 @@ class DashRenderer(Renderer):
         self.toc_tree.append((self.toc_count, text, level, raw))
         self.toc_count += 1
         return rv
+
+    def image(self, src, title, alt_text):
+        self.images.append((src, title, alt_text))
+        return super().image(src, title, alt_text)
 
     def render_toc(self, cursor):
         """Render TOC to SQLITE index.
@@ -143,14 +149,16 @@ scaffold = '''
 </STYLE>
 </HEAD>
 <BODY>%s</BODY>
-</HTML>    
+</HTML>
 ''' % (DOCSETNAME, html.HtmlFormatter().get_style_defs('.highlight'), text)
-
-
 
 
 with codecs.open(docpath + "/index.html",'w', 'utf-8') as f:
     f.write(scaffold)
 
-    
+for (src, tit, alt) in toc.images:
+    b = os.path.dirname(src)
+    dst = docpath + "/" + b
+    os.mkdir(dst)
+    shutil.copy(src, dst)
 
